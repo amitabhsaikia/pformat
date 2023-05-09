@@ -3,11 +3,13 @@ Format strings with ease with ANSI codes and use TPUT easily in python
 
 Functionality:
   At class level:
-    * DrawHLine|HR(c='-')      - Draw horizontal line with default character '-'
+  
+    * DrawHLine|HR(c='-')      - Draw horizontal line with default character '-'  
     * FG                         - Foreground color
     * BG                         - Background color
 
   At instance level:
+  
     * L(label, c='char', fg, bg) - Create a label 'test' and format it as '[test]'
     * N(n)          - 'n' new lines
     * T(n)          - 'n' tabs
@@ -15,6 +17,7 @@ Functionality:
     * POS(n, m)     - Position the string at n-th row and m-th column.
 
   Quirky level:
+  
     * clr|CLR|cls|CLS|clear|CLEAR               - Clear the screen
     * cll|CLL|clearline|CLEARLINE|cline|CLINE   - Clear the line
     * rw|RW|revert|REVERT                       - Go back to the previous line
