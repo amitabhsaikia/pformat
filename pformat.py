@@ -4,7 +4,7 @@
 import os
 
 
-class C:
+class FG:
   """Standard terminal foreground colors"""
   BLACK   = 30
   WHITE   = 37
@@ -15,7 +15,7 @@ class C:
   MAGENTA = 35
   CYAN    = 36
 
-class B:
+class BG:
   """Standard terminal background colors"""
   BLACK   = 40
   WHITE   = 47
@@ -26,14 +26,18 @@ class B:
   MAGENTA = 45
   CYAN    = 46
 
+class AL:
+  """Standard alignment"""
+  LEFT = 0
+  CENTER = 1
+  RIGHT = 2
 
 class F:
   """Formats string on screen, with following functionality using ANSI escape codes.
 
   At class level:
     * draw_line                   - Draw horizontal line with default character '-'
-    * FG                          - Foreground color
-    * BG                          - Background color
+    * draw_title                  - Draw a title and lines around
 
   At instance level:
     * L(label, c='char', fg, bg)  - Create a label 'test' and format it as '[test]'
@@ -58,8 +62,6 @@ class F:
     * b[0-255]                                  - Change the background of the subsequent string
   """
   
-  FG = C
-  BG = B
   WIDTH = 24
   CHARSET = ['\033[1J', '\033[2K', '\033[2F', '\033[1m',
              '\033[2m', '\033[4m', '\033[5m', '\033[m',
@@ -118,7 +120,7 @@ class F:
       self._buf += f'{s:<{n}}'
     return self
 
-  def L(self, label, c='[', fg=C.WHITE, bg=B.BLACK):
+  def L(self, label, c='[', fg=FG.WHITE, bg=BG.BLACK):
     self._buf += f'{c}\033[1;{fg}m\033[1;{bg}m{label}\033[m{F.CHARSET[F.CMAP[c]]}'
     return self
 
@@ -137,13 +139,21 @@ class F:
     return self
 
   @classmethod
+  def draw_title(self, title, n=1, c='-', align=AL.LEFT):
+    hl = int((F.LWIDTH(n) - len(title) - 2) / 2)
+    left = hl
+    right = hl
+    if align == AL.LEFT:
+      left = 3
+      right = hl + (hl - 3)
+    elif align == AL.RIGHT:
+      left = hl + (hl - 3)
+      right = 3
+    return ' '.join([left * c, title, right * c])
+    
+  @classmethod
   def draw_line(cls, n=1, c='-'):
-    l = F.COLS()
-    if n <= 5:
-      l = int(l / max(n, 1))
-    else:
-      l = n
-    return c * l
+    return c * F.LWIDTH(n)
 
   @staticmethod
   def COLS(default=80):
@@ -158,6 +168,13 @@ class F:
       return os.get_terminal_size().rows
     except:
       return default
+
+  @staticmethod
+  def LWIDTH(size=1):
+    if size <= 5:
+      return int(F.COLS() / max(size, 1))
+    else:
+      return size
 
   @staticmethod
   def color_palatte():
@@ -176,9 +193,13 @@ class F:
 
   @staticmethod
   def test():
+    print(F.draw_title('Title', 2, '='))
+    print(F.draw_title('Title', 2, '^'))
+    print(F.draw_title('Title', 2, '#'))
+    print(F.draw_title('Title', 2, '_', AL.RIGHT))
     print(F().C254.S('string')
       .n.t.B130.S('new line and tab').e
-      .n2.t2.S('2 line and 2 tab')
+      .n2.t2.C161.S('2 line and 2 tab').e
       .n.h1.n.h2.n.h3.n.h4.n.h5.n.h6
       .n.P('key', 'value')
       .n.P('key', 'value', 3)
