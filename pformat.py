@@ -32,6 +32,65 @@ class AL:
   CENTER = 1
   RIGHT = 2
 
+
+class PB:
+  """Progress Bar"""
+  def __init__(self, name, total, size=100, color=202):
+    self.name_ = name
+    self.total_ = total
+    self.iter_ = 0.0
+    self.done_ = False
+    self.size_ = size
+    self.color_ = color
+
+  def next(self, count=1, msg=''):
+    self.iter_ += count
+    end = ''
+    if self.iter_ >= self.total_:
+      self.done_ = True
+      self.iter_ = self.total_
+      end = 'Done'
+
+    completed = f'{100 * (self.iter_ / self.total_):0.1f}%'
+    iterlen = int(self.size_ * self.iter_ // self.total_)
+    filled = (f"\033[48;5;{self.color_}m{' ' * iterlen}\033[m" +
+              ' ' * (self.size_ - iterlen))
+    if msg:
+      print(f' {self.name_} [{filled}] {completed} {end}')
+      print(f'\033[2K > {msg}', end='\r')
+      print(f'\033[2F')
+    else:
+      print(f'{self.name_} [{filled}] {completed} {end}', end='\r')
+    if self.done_:
+      print('\n')
+      return False
+    return True
+
+  def done(self):
+    self.done_ = True
+
+
+  @staticmethod
+  def test():
+    import time
+
+    files = [
+		  'README.md',
+		  '../Code/directory_one/verylong.zip',
+		  '../Code/file129322.py',
+		  '../Code/directory_one/verylong.zip',
+		  '../Code/file20.py',
+		  '../Code/file1.py',
+    ]
+
+    pb = PB('Download', 57, 40)
+    i = 0
+    while pb.next(1, files[i%len(files)]):
+      time.sleep(0.1)
+      i += 1
+    pb.done()
+
+
 class F:
   """Formats string on screen, with following functionality using ANSI escape codes.
 
