@@ -1,41 +1,50 @@
 # pformat
 Format strings with ease with ANSI codes and use TPUT easily in python
 
-Functionality:
-  At class level:
+# Testing:
+```
+   python3 -c 'import pformat; pformat.F.color_palatte()'
+   python3 -c 'import pformat; pformat.F.testF()'
+   python3 -c 'import pformat; pformat.F.testPB()'
+```
   
-    * DrawHLine|HR(c='-')      - Draw horizontal line with default character '-'  
-    * FG                         - Foreground color
-    * BG                         - Background color
+# Usage:
+```
+  print(F().c121.b.S('Testing').e.n)
+```
+
+# Documentation:
+ Formats string on screen, with following functionality using ANSI escape codes.
+
+  At class level:
+    * draw_line                   - Draw horizontal line with default character '-'
+    * draw_title                  - Draw a title and lines around
 
   At instance level:
-  
-    * L(label, c='char', fg, bg) - Create a label 'test' and format it as '[test]'
-    * N(n)          - 'n' new lines
-    * T(n)          - 'n' tabs
+    * L(label, c='char', fg, bg)  - Create a label 'test' and format it as '[test]'
+    * P(key, value, num, sep)     - Formats as 'key    : value'
+    * A(key, value, num, sep)     - Formats as '   key - value'
     * S(s, n)       - 's' string with 'n' indentation. Negative numbers indents to right.
     * POS(n, m)     - Position the string at n-th row and m-th column.
 
   Quirky level:
-  
-    * clr|CLR|cls|CLS|clear|CLEAR               - Clear the screen
-    * cll|CLL|clearline|CLEARLINE|cline|CLINE   - Clear the line
-    * rw|RW|revert|REVERT                       - Go back to the previous line
-    * b|B|bold|BOLD|bright|BRIGHT               - Bolden the subsequent string
-    * d|D|dim|DIM|dull|DULL                     - Lighten the subsequent string
-    * u|U|underline|UNDERLINE                   - Underline the subsequent string
-    * m|M|magic|MAGIC                           - Blink the subsequent string
-    * n                                         - Add a single new line
-    * t                                         - Add a single tab
-    * e                                         - End quirky mode
-    * c[0-254]                                  - Change the foreground of the subsequent string
-    * b[0-254]                                  - Change the background of the subsequent string
+    * e           - End quirky mode
+    * cls         - Clear the screen
+    * cll         - Clear the line
+    * sb          - Step Back n lines
+    * u           - Underline the subsequent string
+    * m           - Blink the subsequent string
+    * h[N]        - Draw horizontal line of length N
+    * nl[N]       - Add a newline or do it N times
+    * ts[N]       - Add a tab or do it N times
+    * ws[N]       - Add a tab or do it N times
+    * fg_[0-255]  - Change the foreground of the subsequent string
+    * bg_[0-255]  - Change the background of the subsequent string
+    * fg_[NAME[INDEX]]  - Change the foreground with named color
+    * bg_[NAME[INDEX]]  - Change the background with named color
 
+  Color Names:
+    BLACK, WHITE, GRAY, RED, BLUE, GREEN, YELLOW
+    ORANGE, BROWN, PURPLE, VIOLET, AQUA, TEAL, OLIVE, PINK
 
-Usage:
-
-print(F().L('my label', c='<', fg=F.FG.RED, bg=F.BG.WHITE).S(' This is a great').n.S('ok').N(3).S('how').n.t.S(' does').T(3).S('it work'))
-print(F().CLS.POS(10, 50).C161.S('This is the title'))
-print(F().POS(11, 50).B240.HR(30).e.n)
-print(F().POS(F.ROWS(), F.COLS()))
 
