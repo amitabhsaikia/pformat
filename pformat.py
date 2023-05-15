@@ -21,19 +21,24 @@
 #    * POS(n, m)     - Position the string at n-th row and m-th column.
 #
 #  Quirky level:
-#    * clr|CLR|cls|CLS|clear|CLEAR               - Clear the screen
-#    * cll|CLL|clearline|CLEARLINE|cline|CLINE   - Clear the line
-#    * rw|RW|revert|REVERT                       - Go back to the previous line
-#    * b|B|bold|BOLD|bright|BRIGHT               - Bolden the subsequent string
-#    * d|D|dim|DIM|dull|DULL                     - Lighten the subsequent string
-#    * u|U|underline|UNDERLINE                   - Underline the subsequent string
-#    * m|M|magic|MAGIC                           - Blink the subsequent string
-#    * e                                         - End quirky mode
-#    * h[N]                                      - Draw horizontal line of length N
-#    * n[N]                                      - Add a newline or do it N times
-#    * t[N]                                      - Add a tab or do it N times
-#    * c[0-255]                                  - Change the foreground of the subsequent string
-#    * b[0-255]                                  - Change the background of the subsequent string
+#    * e           - End quirky mode
+#    * cls         - Clear the screen
+#    * cll         - Clear the line
+#    * sb          - Step Back n lines
+#    * u           - Underline the subsequent string
+#    * m           - Blink the subsequent string
+#    * h[N]        - Draw horizontal line of length N
+#    * nl[N]       - Add a newline or do it N times
+#    * ts[N]       - Add a tab or do it N times
+#    * ws[N]       - Add a tab or do it N times
+#    * fg_[0-255]  - Change the foreground of the subsequent string
+#    * bg_[0-255]  - Change the background of the subsequent string
+#    * fg_[NAME[INDEX]]  - Change the foreground with named color
+#    * bg_[NAME[INDEX]]  - Change the background with named color
+#
+#  Color Names:
+#    BLACK, WHITE, GRAY, RED, BLUE, GREEN, YELLOW
+#    ORANGE, BROWN, PURPLE, VIOLET, AQUA, TEAL, OLIVE, PINK
 
 import os
 import re
@@ -69,12 +74,10 @@ class AL:
 
 
 class F:
-  
   WIDTH = 24
   CHAR_MAP = {
-    'cls': '\033[1J', 'cll': '\033[2K', 'u':   '\033[4m', 'm':   '\033[5m',
-    'ws':  ' ', 'ts':  '\t', 'n':   '\n',
-    '(': ')', '[': ']', '{': '}', '<': '>'
+    'cls': '\033[1J', 'cll': '\033[2K', 'u': '\033[4m', 'm': '\033[5m',
+    'ws':  ' ', 'ts':  '\t', 'n':   '\n', '(': ')', '[': ']', '{': '}', '<': '>'
   }
 
   COLOR_MAP = {
@@ -180,6 +183,14 @@ class F:
         self._buffer += '\033[0m'
       elif attr in F.CHAR_MAP:
         self._buffer += F.CHAR_MAP[attr]
+
+      elif attr.startswith('sb'):
+        step = (int(attr[2:]) or 1) + 1
+        self._buffer += f'\033[{step}F'
+
+      elif attr.startswith('sf'):
+        step = (int(attr[2:]) or 1)
+        self._buffer += f'\033[{step}E'
 
       # All color mappings.
       elif attr.startswith('fg_'):
@@ -315,12 +326,14 @@ class F:
 
   @staticmethod
   def testF():
+    print(F().cls)
+    print(F().POS(4, 60).S('Text at 4, 16'))
     print('Testing title bar...\n')
     print(F.draw_title('Title', 2, '='))
     print(F.draw_title('Title', 2, '#'))
     print(F.draw_title('Title', 2, '_', AL.RIGHT))
     print('Testing lines...\n')
-    print(F().h1.nl.h2.nl.h3.nl.h4.nl.h5.nl.h6.nl.h80.nl)
+    print(F().h1.nl.h2.nl.h3.nl.h4.nl.h5.nl.h80.nl)
     print('Testing formatting and coloring...\n')
     print(F()
       .nl.ts.fg_130.S('new line and tab').e
@@ -334,4 +347,7 @@ class F:
       .nl.FG_RED.BG_YELLOW.S('string with foreground and background').e
       .nl.FG_161.S('FG 161').e
       .nl.BG_121.S('BG 121').e)
+    print(F().sf4.S('Step forward 4 lines'))
+    print(F().sb2.S('Step back 2 lines (written after "Step forward 4 lines")'))
+    print(F().sf2.S('Now back to normal'))
 
