@@ -66,7 +66,7 @@ class F:
   # --------------------------------------------------------------------------------
   def StartProgressBar(self, title, total=100, bar_width=100, color=255):
     self._pb = [title, total, bar_width, color]
-    pass
+    return self
 
   def UpdateProgress(self, count, msg=''):
     self._iter += count
@@ -274,13 +274,11 @@ class F:
 		  '../Code/file1.py',
     ]
 
-    f = F()
-    pb = f.StartProgressBar( 'Download', 57, 40)
+    pb = F().StartProgressBar( 'Download', 57, 40)
     i = 0
-    while f.UpdateProgress(1, files[i%len(files)]):
+    while pb.UpdateProgress(1, files[i%len(files)]):
       time.sleep(0.01)
       i += 1
-    f.DoneProgress()
 
   @staticmethod
   def testF():
