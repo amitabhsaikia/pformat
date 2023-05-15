@@ -1,6 +1,13 @@
+# Testing:
+#   python3 -c 'import pformat; pformat.F.color_palatte()'
+#   python3 -c 'import pformat; pformat.F.testF()'
+#   python3 -c 'import pformat; pformat.F.testPB()'
+#  
 # Usage:
 #   print(F().c121.b.S('Testing').e.n)
-#  """Formats string on screen, with following functionality using ANSI escape codes.
+#
+# Documentation:
+#  Formats string on screen, with following functionality using ANSI escape codes.
 #
 #  At class level:
 #    * draw_line                   - Draw horizontal line with default character '-'
@@ -27,7 +34,6 @@
 #    * t[N]                                      - Add a tab or do it N times
 #    * c[0-255]                                  - Change the foreground of the subsequent string
 #    * b[0-255]                                  - Change the background of the subsequent string
-#  """
 
 import os
 import re
@@ -196,7 +202,7 @@ class F:
         if self._pb:
           self._pb[3] = num
         else:
-          self._buffer += f'\033[34;5;{num}m'
+          self._buffer += f'\033[48;5;{num}m'
 
       # Handle whitespaces
       elif attr.startswith('ws'):
@@ -256,35 +262,35 @@ class F:
 
   @staticmethod
   def color_palatte():
-    s = 'Foreground:\n'
-    for i in range(255):
-      s += f'\033[38;5;{i}m{i:3} | '
-      if (i + 1) % 15 == 0:
-        s += '\n'
+    print('-' * 80)
+    w = 16
+    
+    s = ''
+    a = ''
+    for i in range(16):
+      s += f'\033[48;5;{i}m{i:>4}\033[m'
+      a += f'\033[48;5;{i}m{" ":>4}\033[m'
+    print(a)
     print(s)
-    s = '\nBackground:\n'
-    for i in range(255):
-      s += f'\033[48;5;{i}m{i:5} |'
-      if (i + 1) % 8 == 0:
-        s += '\n'
+    
+    for i in range(6):
+      s = ''
+      a = ''
+      for j in range(36):
+        num = i * 35 + j + 16 + i
+        s += f'\033[48;5;{num}m{num:>4}\033[m'
+        a += f'\033[48;5;{num}m{" ":>4}\033[m'
+      print(a)
+      print(s)
+        
+    s = ''
+    a = ''
+    for i in range(232, 256):
+      s += f'\033[48;5;{i}m\033[38;5;{232 + (256 - i + 1)}m{i:^4}\033[m'
+      a += f'\033[48;5;{i}m{" ":>4}\033[m'
+    print(a)
     print(s)
-
-  @staticmethod
-  def test():
-    print(F.draw_title('Title', 2, '='))
-    print(F.draw_title('Title', 2, '#'))
-    print(F.draw_title('Title', 2, '_', AL.RIGHT))
-    print(F()
-      .C254.S('string').nl
-      .nl.ts.fg_130.S('new line and tab').e
-      .nl.ts.bg_130.S('new line and tab').e
-      .nl.ts.bg_.S('new line and tab').e
-      .nl2.ts2.fg_161.S('2 line and 2 tab').e
-      .nl.h1.nl.h2.nl.h3.nl.h4.nl.h5.nl.h6
-      .nl.P('key', 'value')
-      .nl.A('key', 'value')
-      .nl.L('INFO').ws.S('Logging')
-      .nl.S('first').w3.S('name'))
+    print('-' * 80)
 
   @staticmethod
   def testPB():
@@ -306,4 +312,26 @@ class F:
       time.sleep(0.01)
       i += 1
     f.DoneProgress()
+
+  @staticmethod
+  def testF():
+    print('Testing title bar...\n')
+    print(F.draw_title('Title', 2, '='))
+    print(F.draw_title('Title', 2, '#'))
+    print(F.draw_title('Title', 2, '_', AL.RIGHT))
+    print('Testing lines...\n')
+    print(F().h1.nl.h2.nl.h3.nl.h4.nl.h5.nl.h6.nl.h80.nl)
+    print('Testing formatting and coloring...\n')
+    print(F()
+      .nl.ts.fg_130.S('new line and tab').e
+      .nl.ts.bg_130.S('new line and tab').e
+      .nl.ts.S('new line and tab').e
+      .nl2.ts2.S('2 line and 2 tab').e
+      .nl.L('INFO').ws.S('Logging')
+      .nl.P('key', 'value')
+      .nl.A('key', 'value')
+      .nl.S('first').ws10.S('name')
+      .nl.FG_RED.BG_YELLOW.S('string with foreground and background').e
+      .nl.FG_161.S('FG 161').e
+      .nl.BG_121.S('BG 121').e)
 
