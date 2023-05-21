@@ -2,42 +2,7 @@ import os
 import re
 
 
-class FG:
-  """Standard terminal foreground colors"""
-  BLACK   = 30
-  WHITE   = 37
-  RED     = 31
-  GREEN   = 32
-  YELLOW  = 33
-  BLUE    = 34
-  MAGENTA = 35
-  CYAN    = 36
-
-class BG:
-  """Standard terminal background colors"""
-  BLACK   = 40
-  WHITE   = 47
-  RED     = 41
-  GREEN   = 42
-  YELLOW  = 43
-  BLUE    = 44
-  MAGENTA = 45
-  CYAN    = 46
-
-class AL:
-  """Standard alignment"""
-  LEFT = 0
-  CENTER = 1
-  RIGHT = 2
-
-
-class F:
-  WIDTH = 24
-  CHAR_MAP = {
-    'cls': '\033[1J', 'cll': '\033[2K', 'u': '\033[4m', 'm': '\033[5m',
-    'ws':  ' ', 'ts':  '\t', 'n':   '\n', '(': ')', '[': ']', '{': '}', '<': '>'
-  }
-
+class Color:
   COLOR_MAP = {
       'WHITE':  [254, 255],
       'BROWN':  [94, 130, 166, 172],
@@ -55,6 +20,26 @@ class F:
       'VIOLET': [56, 57, 93, 63, 98, 99, 135, 105, 141, 147],
       'GRAY':   [236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253],
   }
+# Add as property
+for k, v in Color.COLOR_MAP.items():
+  setattr(Color, k, v[0])
+  for i in range(1, len(v)):
+    setattr(Color, f'{k}{i}', v[i])
+
+
+class AL:
+  """Standard alignment"""
+  LEFT = 0
+  CENTER = 1
+  RIGHT = 2
+
+
+class F:
+  WIDTH = 24
+  CHAR_MAP = {
+    'cls': '\033[1J', 'cll': '\033[2K', 'u': '\033[4m', 'm': '\033[5m',
+    'ws':  ' ', 'ts':  '\t', 'n':   '\n', '(': ')', '[': ']', '{': '}', '<': '>'
+  }
 
   def __init__(self, base=''):
     self._buffer = base
@@ -64,7 +49,7 @@ class F:
   # --------------------------------------------------------------------------------
   # Progress Bar
   # --------------------------------------------------------------------------------
-  def StartProgressBar(self, title, total=100, bar_width=100, color=255):
+  def StartProgressBar(self, title, total=100, bar_width=100, color=Color.WHITE):
     self._pb = [title, total, bar_width, color]
     return self
 
@@ -117,8 +102,8 @@ class F:
     self._buffer += f'{key:>{F.WIDTH}} {sep} {value}'
     return self
 
-  def L(self, label, c='[', fg=FG.WHITE, bg=BG.BLACK):
-    self._buffer += f'{c}\033[1;{fg}m\033[1;{bg}m{label}\033[m{F.CHAR_MAP[c]}'
+  def L(self, label, c='[', fg=Color.WHITE, bg=Color.BLACK):
+    self._buffer += f'{c}\033[38;5;{fg}m\033[48;5;{bg}m{label.upper()}\033[m{F.CHAR_MAP[c]}'
     return self
 
   def POS(self, row=0, col=0):
@@ -136,6 +121,9 @@ class F:
 
   def __getattr__(self, attr):
     try:
+      if attr.upper() in Color.COLOR_MAP:
+        return Color.COLOR_MAP[attr.upper()][0]
+
       attr = attr.lower()
       if attr == 'e':
         self._buffer += '\033[0m'
@@ -155,8 +143,8 @@ class F:
         parts = re.split('(\d+)', attr[3:])
         color = parts[0].upper()
         num = int(parts[1]) if len(parts) > 1 else 0
-        if color in F.COLOR_MAP:
-          num = 0 if num > len(F.COLOR_MAP[color]) else F.COLOR_MAP[color][num]
+        if color in Color.COLOR_MAP:
+          num = 0 if num > len(Color.COLOR_MAP[color]) else Color.COLOR_MAP[color][num]
         if self._pb:
           self._pb[3] = num
         else:
@@ -166,8 +154,8 @@ class F:
         parts = re.split('(\d+)', attr[3:])
         color = parts[0].upper()
         num = int(parts[1]) if len(parts) > 1 else 0
-        if color in F.COLOR_MAP:
-          num = 0 if num > len(F.COLOR_MAP[color]) else F.COLOR_MAP[color][num]
+        if color in Color.COLOR_MAP:
+          num = 0 if num > len(Color.COLOR_MAP[color]) else Color.COLOR_MAP[color][num]
         if self._pb:
           self._pb[3] = num
         else:
@@ -297,6 +285,7 @@ class F:
       .nl.ts.S('new line and tab').e
       .nl2.ts2.S('2 line and 2 tab').e
       .nl.L('INFO').ws.S('Logging')
+      .nl.L('WARNING', fg=F.FG.ORANGE).ws.S('Logging')
       .nl.P('key', 'value')
       .nl.A('key', 'value')
       .nl.S('first').ws10.S('name')
