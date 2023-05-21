@@ -277,22 +277,22 @@ class F:
     print(F.draw_title('Title', 2, '#'))
     print(F.draw_title('Title', 2, '_', AL.RIGHT))
     print('Testing lines...\n')
-    print(F().h1.nl.h2.nl.h3.nl.h4.nl.h5.nl.h80.nl)
+    print(F().H1.NL.H2.NL.H3.NL.H4.NL.H5.NL.H80.NL)
     print('Testing formatting and coloring...\n')
     print(F()
-      .nl.ts.fg_130.S('new line and tab').e
-      .nl.ts.bg_130.S('new line and tab').e
-      .nl.ts.S('new line and tab').e
-      .nl2.ts2.S('2 line and 2 tab').e
-      .nl.L('INFO').ws.S('Logging')
-      .nl.L('WARNING', fg=F.FG.ORANGE).ws.S('Logging')
-      .nl.P('key', 'value')
-      .nl.A('key', 'value')
-      .nl.S('first').ws10.S('name')
-      .nl.FG_RED.BG_YELLOW.S('string with foreground and background').e
-      .nl.FG_161.S('FG 161').e
-      .nl.BG_121.S('BG 121').e)
-    print(F().sf4.S('Step forward 4 lines'))
-    print(F().sb2.S('Step back 2 lines (written after "Step forward 4 lines")'))
-    print(F().sf2.S('Now back to normal'))
+      .NL.TS.FG_130.S('new line and tab').E
+      .NL.TS.BG_130.S('new line and tab').E
+      .NL.TS.S('new line and tab').E
+      .NL2.TS2.S('2 line and 2 tab').E
+      .NL.L('INFO').WS.S('Logging')
+      .NL.L('WARNING', fg=Color.ORANGE).WS.S('Logging')
+      .NL.P('key', 'value')
+      .NL.A('key', 'value')
+      .NL.S('first').WS10.S('name')
+      .NL.FG_RED.BG_YELLOW.S('string with foreground and background').E
+      .NL.FG_161.S('FG 161').E
+      .NL.BG_121.S('BG 121').E)
+    print(F().SF4.S('Step forward 4 lines'))
+    print(F().SB2.S('Step back 2 lines (written after "Step forward 4 lines")'))
+    print(F().SF2.S('Now back to normal'))
 
